@@ -1,1 +1,32 @@
-Hello Hai,this is hari test file
+select 
+ti.basket_id
+,r.description as retailer_description
+,ci.value as loyalty_id
+,ti2.quantity
+,ti2.product_id
+,p.product_descr as product_description
+,ti.product_id as incentive_id
+,case when ti2.quantity = 0 or ti2.quantity = null then 0
+        else ti2.total_amount/ti2.quantity
+        end as unit_price
+,ti2."DATE"
+from (select * from mdot_client.transaction_item
+            where product_id in (282843)
+         and product_type_id = 1) as ti
+    join mdot_client.transaction t
+  on ti.basket_id = t.basket_id
+  join (select * from mdot_client.transaction_item where product_id in (3450014000,3450015112,3450015136,3450015135,3450019500
+,3450014429,3450019410,3450015181,3450015118,3450015100,3450015150
+,3450014008,3450015236,3450015192,3450015119,3450015213,3450015116
+,3450014449,3450015179,3450015129,3450014404)) as ti2
+on ti.basket_id = ti2.basket_id
+  and t.clientid = ti2.clientid
+       join  mdot_client.product p
+  on cast(ti2.product_id as varchar)  = cast(p.product_id as varchar) 
+   and ti2.clientid = p.clientid
+  join mdot_client.consumer_id ci
+  on t.consumer_id_id = ci.consumer_id_id
+  and ti.clientid = ci.clientid
+  join mdot_client.retailer r
+  on ti2.clientid = r.clientid
+  order by ti.basket_id;
